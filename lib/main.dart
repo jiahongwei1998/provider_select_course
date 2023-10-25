@@ -54,7 +54,9 @@ class ObjectProvider extends ChangeNotifier {
   ObjectProvider()
       : id = const Uuid().v4(),
         _cheapObject = CheapObject(),
-        _expensiveObject = ExpensiveObject();
+        _expensiveObject = ExpensiveObject() {
+    start();
+  }
 
   @override
   void notifyListeners() {
@@ -94,12 +96,43 @@ class HomePage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Home Page'),
       ),
+      body: Column(
+        children: [
+          const Row(
+            children: [
+              Expanded(child: CheapWidget()),
+              Expanded(child: ExpensiveWidget()),
+            ],
+          ),
+          const Row(
+            children: [
+              Expanded(child: ObjectProviderWidget()),
+            ],
+          ),
+          Row(
+            children: [
+              TextButton(
+                onPressed: () {
+                  context.read<ObjectProvider>().stop();
+                },
+                child: const Text('Stop'),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<ObjectProvider>().start();
+                },
+                child: const Text('Start'),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }
 
-class ExensiveWidget extends StatelessWidget {
-  const ExensiveWidget({super.key});
+class ExpensiveWidget extends StatelessWidget {
+  const ExpensiveWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -130,12 +163,32 @@ class CheapWidget extends StatelessWidget {
     );
     return Container(
       height: 100,
-      color: Colors.blue,
+      color: Colors.yellow,
       child: Column(
         children: [
           const Text('Cheap Widget'),
           const Text('Last updated'),
           Text(cheapObject.lastUpdated),
+        ],
+      ),
+    );
+  }
+}
+
+class ObjectProviderWidget extends StatelessWidget {
+  const ObjectProviderWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<ObjectProvider>();
+    return Container(
+      height: 100,
+      color: Colors.purple,
+      child: Column(
+        children: [
+          const Text('Object Provider Widget'),
+          const Text('Id'),
+          Text(provider.id),
         ],
       ),
     );
